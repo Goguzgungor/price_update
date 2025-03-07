@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
-import { AETHUSDC, CASEWALLET, StakedUSDeV2, SUSDS } from './contract.const';
+import { AETHUSDC, CASEWALLET, StakedUSDeV2, STUSR, SUSDS } from './contract.const';
 
 @Injectable()
 export class AppService {
@@ -8,11 +8,12 @@ export class AppService {
   private stakedUSDeV2Contract: ethers.Contract;
   private susdsContract: ethers.Contract;
   private aethUsdcContract: ethers.Contract;
+  private stusrContract: ethers.Contract;
   public caseWalletAddress: string;
 
   constructor() {
     // Initialize provider
-    const apikey = "your-api-key";
+    const apikey = "tCgmB6NQ4Qx7sYEWYZSAxOMBwN7F5TkH";
     this.provider = new ethers.JsonRpcProvider(
       `https://eth-mainnet.g.alchemy.com/v2/${apikey}`
     );
@@ -36,6 +37,13 @@ export class AppService {
       this.provider
     );
 
+    this.stusrContract = new ethers.Contract(
+      STUSR.address,
+      STUSR.abi,
+      this.provider
+    );
+
+
     this.caseWalletAddress = CASEWALLET;
   }
 
@@ -51,9 +59,21 @@ export class AppService {
     return {balance:ethers.formatUnits(balance, 18), totalPrice: ethers.formatUnits(totalPrice, 18)}
   }
 
+  async getSTAKEDSKYUSDSBalance() {
+    const balance = await this.susdsContract.balanceOf(this.caseWalletAddress);
+    const earned = await this.susdsContract.earned(this.caseWalletAddress);
+    return {balance:ethers.formatUnits(balance, 18), earned: ethers.formatUnits(earned, 18),totalBalance: ethers.formatUnits(balance + earned, 18)}
+  }
+
+
   async getAETHUSDCBalance() {
     const balance = await this.aethUsdcContract.balanceOf(this.caseWalletAddress);
     return {balance:ethers.formatUnits(balance, 6), totalPrice: ethers.formatUnits(balance, 6)}
+  }
+
+  async getSTUSRBalance() {
+    const balance = await this.stusrContract.balanceOf(this.caseWalletAddress);
+    return {balance:ethers.formatUnits(balance, 18)}
   }
 
   async getAllAssetData() {
@@ -62,5 +82,8 @@ export class AppService {
     const aethUsdcBalance = await this.getAETHUSDCBalance();
     return {stakedUSDeV2Balance, susdsBalance, aethUsdcBalance}
   }
+
+
+
 
 }

@@ -9,4 +9,14 @@ export class AppController {
   getHello(): Promise<any> {
     return this.appService.getAllAssetData();
   }
+
+  @Get('stkaed-usds')
+  getStakedUSDeV2(): Promise<any> {
+    return this.appService.getSTAKEDSKYUSDSBalance();
+  }
+
+  @Get('stusr')
+  getSTUSR(): Promise<any> {
+    return this.appService.getSTUSRBalance();
+  }
 }
