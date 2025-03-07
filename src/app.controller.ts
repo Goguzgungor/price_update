@@ -10,7 +10,7 @@ export class AppController {
     return this.appService.getAllAssetData();
   }
 
-  @Get('stkaed-usds')
+  @Get('staked-usds')
   getStakedUSDeV2(): Promise<any> {
     return this.appService.getSTAKEDSKYUSDSBalance();
   }
