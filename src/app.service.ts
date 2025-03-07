@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
-import { AETHUSDC, CASEWALLET, StakedUSDeV2, STUSR, SUSDS } from './contract.const';
+import { AETHUSDC, CASEWALLET, cUSDCv3, ERC20ABI, StakedUSDeV2, STUSR, SUSDS } from './contract.const';
 
 @Injectable()
 export class AppService {
@@ -8,6 +8,7 @@ export class AppService {
   private stakedUSDeV2Contract: ethers.Contract;
   private susdsContract: ethers.Contract;
   private aethUsdcContract: ethers.Contract;
+  private cUSDCv3Contract : ethers.Contract;
   private stusrContract: ethers.Contract;
   public caseWalletAddress: string;
 
@@ -24,6 +25,12 @@ export class AppService {
       StakedUSDeV2.abi,
       this.provider
     );
+
+    this.cUSDCv3Contract = new ethers.Contract(
+      cUSDCv3,
+      ERC20ABI,
+      this.provider
+    )
 
     this.susdsContract = new ethers.Contract(
       SUSDS.address,
@@ -53,16 +60,15 @@ export class AppService {
     return {balance:ethers.formatUnits(balance, 18), totalPrice: ethers.formatUnits(totalPrice, 18)}
   }
 
-  async getSUSDSBalance() {
-    const balance = await this.susdsContract.balanceOf(this.caseWalletAddress);
-    const totalPrice = await this.susdsContract.previewRedeem(balance);
-    return {balance:ethers.formatUnits(balance, 18), totalPrice: ethers.formatUnits(totalPrice, 18)}
-  }
-
   async getSTAKEDSKYUSDSBalance() {
     const balance = await this.susdsContract.balanceOf(this.caseWalletAddress);
     const earned = await this.susdsContract.earned(this.caseWalletAddress);
     return {balance:ethers.formatUnits(balance, 18), earned: ethers.formatUnits(earned, 18),totalBalance: ethers.formatUnits(balance + earned, 18)}
+  }
+
+  async getcUSDCv3Balance(){
+    const balance = await this.cUSDCv3Contract.balanceOf(this.caseWalletAddress);
+    return {balance:ethers.formatUnits(balance, 6)}
   }
 
 
@@ -78,9 +84,15 @@ export class AppService {
 
   async getAllAssetData() {
     const stakedUSDeV2Balance = await this.getStakedUSDeV2Balance();
-    const susdsBalance = await this.getSUSDSBalance();
     const aethUsdcBalance = await this.getAETHUSDCBalance();
-    return {stakedUSDeV2Balance, susdsBalance, aethUsdcBalance}
+    const susdsBalance = await this.getSTUSRBalance();
+    const stakedSkyUsdsBalance = await this.getSTAKEDSKYUSDSBalance();
+    const cusdcv3Balance = await this.getcUSDCv3Balance();
+    return {sUSDe : {quantity: stakedUSDeV2Balance.balance, totalPrice: stakedUSDeV2Balance.totalPrice},
+     aethUsdc : {quantity: aethUsdcBalance.balance},
+     susds : {quantity: susdsBalance.balance},
+     stakedSkyUsds : {quantity: stakedSkyUsdsBalance.balance, earned: stakedSkyUsdsBalance.earned, totalquantity: stakedSkyUsdsBalance.totalBalance},
+     cusdcv3 : {quantity: cusdcv3Balance.balance}}
   }
 
 
