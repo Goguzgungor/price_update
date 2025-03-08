@@ -56,7 +56,7 @@ export class AppService {
 
   async getStakedUSDeV2Balance() {
     const balance = await this.stakedUSDeV2Contract.balanceOf(this.caseWalletAddress);
-    const totalPrice = await this.stakedUSDeV2Contract.convertToShares(balance);
+    const totalPrice = await this.stakedUSDeV2Contract.convertToAssets(balance);
     return {balance:ethers.formatUnits(balance, 18), totalPrice: ethers.formatUnits(totalPrice, 18)}
   }
 
