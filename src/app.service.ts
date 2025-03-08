@@ -63,7 +63,7 @@ export class AppService {
   async getSTAKEDSKYUSDSBalance() {
     const balance = await this.susdsContract.balanceOf(this.caseWalletAddress);
     const earned = await this.susdsContract.earned(this.caseWalletAddress);
-    return {balance:ethers.formatUnits(balance, 18), earned: ethers.formatUnits(earned, 18),totalBalance: ethers.formatUnits(balance + earned, 18)}
+    return {balance:ethers.formatUnits(balance, 18), earned: ethers.formatUnits(earned, 18)}
   }
 
   async getcUSDCv3Balance(){
@@ -91,7 +91,7 @@ export class AppService {
     return {sUSDe : {quantity: stakedUSDeV2Balance.balance, totalPrice: stakedUSDeV2Balance.totalPrice},
      aethUsdc : {quantity: aethUsdcBalance.balance},
      stUSR : {quantity: stakedUSRBalance.balance},
-     stakedSkyUsds : {quantity: stakedSkyUsdsBalance.balance, earned: stakedSkyUsdsBalance.earned, totalquantity: stakedSkyUsdsBalance.totalBalance},
+     stakedSkyUsds : {quantity: stakedSkyUsdsBalance.balance, earnedSKY: stakedSkyUsdsBalance.earned},
      cusdcv3 : {quantity: cusdcv3Balance.balance}}
   }
 
