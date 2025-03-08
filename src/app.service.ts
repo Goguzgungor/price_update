@@ -85,12 +85,12 @@ export class AppService {
   async getAllAssetData() {
     const stakedUSDeV2Balance = await this.getStakedUSDeV2Balance();
     const aethUsdcBalance = await this.getAETHUSDCBalance();
-    const susdsBalance = await this.getSTUSRBalance();
+    const stakedUSRBalance = await this.getSTUSRBalance();
     const stakedSkyUsdsBalance = await this.getSTAKEDSKYUSDSBalance();
     const cusdcv3Balance = await this.getcUSDCv3Balance();
     return {sUSDe : {quantity: stakedUSDeV2Balance.balance, totalPrice: stakedUSDeV2Balance.totalPrice},
      aethUsdc : {quantity: aethUsdcBalance.balance},
-     susds : {quantity: susdsBalance.balance},
+     stUSR : {quantity: stakedUSRBalance.balance},
      stakedSkyUsds : {quantity: stakedSkyUsdsBalance.balance, earned: stakedSkyUsdsBalance.earned, totalquantity: stakedSkyUsdsBalance.totalBalance},
      cusdcv3 : {quantity: cusdcv3Balance.balance}}
   }
