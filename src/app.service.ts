@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
-import { AETHUSDC, CASEWALLET, cUSDCv3, ERC20ABI, SMOKEHOUSEUSDC, StakedUSDeV2, STUSR, SUSDS } from './contract.const';
+import { AETHUSDC, CASEWALLET, cUSDCv3, ERC20ABI, EULER, SMOKEHOUSEUSDC, StakedUSDeV2, STUSR, SUSDS } from './contract.const';
 
 @Injectable()
 export class AppService {
@@ -12,6 +12,7 @@ export class AppService {
   private stusrContract: ethers.Contract;
   public caseWalletAddress: string;
   private smokeHouseUSDCContract: ethers.Contract;
+  private eulerContract: ethers.Contract;
 
   constructor() {
     // Initialize provider
@@ -21,6 +22,12 @@ export class AppService {
     );
 
     // Initialize contracts
+    this.eulerContract = new ethers.Contract(
+      EULER.address,
+      StakedUSDeV2.abi,
+      this.provider
+    );
+
     this.stakedUSDeV2Contract = new ethers.Contract(
       StakedUSDeV2.address,
       StakedUSDeV2.abi,
@@ -73,6 +80,12 @@ export class AppService {
     return {balance:ethers.formatUnits(balance, 18), totalPrice: ethers.formatUnits(totalPrice, 6)}
   }
 
+  async getEulerBalance() {
+    const balance = await this.smokeHouseUSDCContract.balanceOf(this.caseWalletAddress);
+    const totalPrice = await this.smokeHouseUSDCContract.convertToAssets(balance);
+    return {balance:ethers.formatUnits(balance, 18), totalPrice: ethers.formatUnits(totalPrice, 6)}
+  }
+
   async getSTAKEDSKYUSDSBalance() {
     const balance = await this.susdsContract.balanceOf(this.caseWalletAddress);
     const earned = await this.susdsContract.earned(this.caseWalletAddress);
@@ -102,12 +115,14 @@ export class AppService {
     const stakedSkyUsdsBalance = await this.getSTAKEDSKYUSDSBalance();
     const cusdcv3Balance = await this.getcUSDCv3Balance();
     const smokeHouseUSDCBalance = await this.getSmokeHouseUSDCBalance();
+    const eulerBalance = await this.getEulerBalance();
     return {sUSDe : {quantity: stakedUSDeV2Balance.balance, totalPrice: stakedUSDeV2Balance.totalPrice},
      aethUsdc : {quantity: aethUsdcBalance.balance},
      stUSR : {quantity: stakedUSRBalance.balance},
      stakedSkyUsds : {quantity: stakedSkyUsdsBalance.balance, earnedSKY: stakedSkyUsdsBalance.earned},
      cusdcv3 : {quantity: cusdcv3Balance.balance},
-     smokeHouseUSDC : {quantity: smokeHouseUSDCBalance.balance, totalPrice: smokeHouseUSDCBalance.totalPrice}}
+     smokeHouseUSDC : {quantity: smokeHouseUSDCBalance.balance, totalPrice: smokeHouseUSDCBalance.totalPrice},
+     euler : {quantity: eulerBalance.balance, totalPrice: eulerBalance.totalPrice}}
   }
 
 

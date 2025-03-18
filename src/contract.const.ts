@@ -28,6 +28,9 @@ export const ERC20ABI = [{"inputs":[{"internalType":"contract IPool","name":"poo
 export const SMOKEHOUSEUSDC = {
     address :"0xBEeFFF209270748ddd194831b3fa287a5386f5bC"
 }
+export const EULER = {
+    address: "0xe0a80d35bB6618CBA260120b279d357978c42BCE"
+}
 
 const CASEWALLET = "0x8676AFd0251A8E69A93596F9D84D17F179e0BA7A"
 
