@@ -419,7 +419,7 @@ export class AppService {
     }
     
     if (parseFloat(poolTokenData.earnedAero) > 0 || parseFloat(poolTokenData.poolInfo.my_balance_ytryb) > 0 || parseFloat(poolTokenData.poolInfo.my_balance_usdc) > 0) {
-      result.poolToken = {earned: poolTokenData.earnedAero, poolInfo: poolTokenData.poolInfo};
+      result.poolToken = {earnedAero: poolTokenData.earnedAero, poolInfo: poolTokenData.poolInfo};
     }
     
     return result;
