@@ -173,7 +173,7 @@ export class AppService {
     const dec1 = Math.log10(Number(metadata[1])); // 1000000 -> 6 decimals
     
     return {
-      earned: ethers.formatUnits(earned, 18),
+      earnedAero: ethers.formatUnits(earned, 18),
       poolInfo: {
         my_percentage: my_percentage.toString() + "%",
         my_balance_ytryb: ethers.formatUnits(my_balance_ytryb, dec0),
