@@ -381,46 +381,18 @@ export class AppService {
     const result: any = {};
     
     // Add Giza Arma total price
-    if (gizaArmaTotalPrice && gizaArmaTotalPrice !== '$0') {
-      result.gizaArmaTotal = gizaArmaTotalPrice;
-    }
+    result.gizaArmaTotal = gizaArmaTotalPrice;
     
-    // Only include assets with non-zero balances
-    if (parseFloat(stakedUSDeV2Balance.balance) > 0) {
-      result.sUSDe = {quantity: stakedUSDeV2Balance.balance, totalPrice: stakedUSDeV2Balance.totalPrice};
-    }
-    
-    if (parseFloat(aethUsdcBalance.balance) > 0) {
-      result.aethUsdc = {quantity: aethUsdcBalance.balance};
-    }
-    
-    if (parseFloat(stakedUSRBalance.balance) > 0) {
-      result.stUSR = {quantity: stakedUSRBalance.balance};
-    }
-    
-    if (parseFloat(stakedSkyUsdsBalance.balance) > 0 || parseFloat(stakedSkyUsdsBalance.earned) > 0) {
-      result.stakedSkyUsds = {quantity: stakedSkyUsdsBalance.balance, earnedSKY: stakedSkyUsdsBalance.earned};
-    }
-    
-    if (parseFloat(cusdcv3Balance.balance) > 0) {
-      result.cusdcv3 = {quantity: cusdcv3Balance.balance};
-    }
-    
-    if (parseFloat(smokeHouseUSDCBalance.balance) > 0) {
-      result.smokeHouseUSDC = {quantity: smokeHouseUSDCBalance.balance, totalPrice: smokeHouseUSDCBalance.totalPrice};
-    }
-    
-    if (parseFloat(eulerBalance.balance) > 0) {
-      result.euler = {quantity: eulerBalance.balance, totalPrice: eulerBalance.totalPrice};
-    }
-    
-    if (parseFloat(fUSDCBalance.balance) > 0) {
-      result.fUSDC = {totalPrice: fUSDCBalance.totalPrice};
-    }
-    
-    if (parseFloat(poolTokenData.earnedAero) > 0 || parseFloat(poolTokenData.poolInfo.my_balance_ytryb) > 0 || parseFloat(poolTokenData.poolInfo.my_balance_usdc) > 0) {
-      result.poolToken = {earnedAero: poolTokenData.earnedAero, poolInfo: poolTokenData.poolInfo};
-    }
+    // Include all assets regardless of balance
+    result.sUSDe = {quantity: stakedUSDeV2Balance.balance, totalPrice: stakedUSDeV2Balance.totalPrice};
+    result.aethUsdc = {quantity: aethUsdcBalance.balance};
+    result.stUSR = {quantity: stakedUSRBalance.balance};
+    result.stakedSkyUsds = {quantity: stakedSkyUsdsBalance.balance, earnedSKY: stakedSkyUsdsBalance.earned};
+    result.cusdcv3 = {quantity: cusdcv3Balance.balance};
+    result.smokeHouseUSDC = {quantity: smokeHouseUSDCBalance.balance, totalPrice: smokeHouseUSDCBalance.totalPrice};
+    result.euler = {quantity: eulerBalance.balance, totalPrice: eulerBalance.totalPrice};
+    result.fUSDC = {totalPrice: fUSDCBalance.totalPrice};
+    result.poolToken = {earnedAero: poolTokenData.earnedAero, poolInfo: poolTokenData.poolInfo};
     
     return result;
   }
