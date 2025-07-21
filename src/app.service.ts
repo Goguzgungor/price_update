@@ -244,6 +244,7 @@ export class AppService {
   async getSUSDeBalancePreview() { return this.callBalanceOf('susde'); }
   async getSUSDSBalance() { return this.callBalanceOf('susds'); }
 
+
   // --- Wallet Balances (Etherscan/Basescan) ---
   async getWalletBalances() {
     const fundingAddress = '0x8676afd0251a8e69a93596f9d84d17f179e0ba7a';
@@ -321,12 +322,12 @@ export class AppService {
       this.getWalletBalances()
     ]);
     return {
-      fluidPreviewRedeem: { balance: fluidBalance, price: fluidPreviewRedeem },
-      wasabiPreviewRedeem: { balance: wasabiBalance, price: wasabiPreviewRedeem },
-      smokehousePreviewRedeem: { balance: smokehouseBalance, price: smokehousePreviewRedeem },
-      eulerPreviewRedeem: { balance: eulerBalancePreview, price: eulerPreviewRedeem },
-      susdePreviewRedeem: { balance: susdeBalancePreview, price: susdePreviewRedeem },
-      susdsChi: { balance: susdsBalance, price: susdsChi },
+      fluid: { balance: fluidBalance, price: fluidPreviewRedeem },
+      wasabi: { balance: wasabiBalance, price: wasabiPreviewRedeem },
+      smokehouse: { balance: smokehouseBalance, price: smokehousePreviewRedeem },
+      euler: { balance: eulerBalancePreview, price: eulerPreviewRedeem },
+      sUSDe: { balance: susdeBalancePreview, price: susdePreviewRedeem },
+      sUSDS: { balance: susdsBalance, price: susdsChi },
       aeroPrice,
       eulPrice,
       senaPrice,
@@ -334,7 +335,8 @@ export class AppService {
       morphoPrice,
       compPrice,
       skyPrice,
-      walletBalances
+      funding: walletBalances?.funding,
+      DAOTreasury: walletBalances?.daoTreasury
     };
   }
 }
