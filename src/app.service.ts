@@ -20,6 +20,7 @@ export class AppService {
   public caseWalletAddress: string;
   private smokeHouseUSDCContract: ethers.Contract;
   private eulerContract: ethers.Contract;
+  private coinMarketCapApiKey = "c25a77d0-8371-4a4a-8197-220831d2058f";
 
   constructor() {
     // Initialize provider
@@ -366,6 +367,158 @@ export class AppService {
     }
   }
 
+  async getAEROPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=AERO";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.AERO.quote.USD.price;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getEULPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=EUL";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.EUL.quote.USD.price;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getSENAPrice() {
+    const cgId = "ethena-staked-ena";
+    const dsAddress = "0x8be3460a480c80728a8c4d7a5d5303c85ba7b3b9";
+    let price = null;
+    // 1) CoinMarketCap
+    try {
+      const cmcUrl = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?slug=ethena-staked-ena";
+      const cmcResp = await axios.get(cmcUrl, { headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey } });
+      const idKey = Object.keys(cmcResp.data.data || {})[0];
+      if (idKey) price = cmcResp.data.data[idKey].quote.USD.price;
+    } catch (e) {}
+    // 2) CoinGecko (yedek)
+    if (price === null) {
+      try {
+        const cgUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd`;
+        const cgResp = await axios.get(cgUrl);
+        if (cgResp.data && cgResp.data[cgId] && cgResp.data[cgId].usd !== undefined) price = cgResp.data[cgId].usd;
+      } catch (e) {}
+    }
+    // 3) DexScreener (son çare)
+    if (price === null) {
+      try {
+        const dsUrl = `https://api.dexscreener.com/latest/dex/tokens/${dsAddress}`;
+        const dsResp = await axios.get(dsUrl);
+        if (dsResp.data && dsResp.data.pairs && dsResp.data.pairs.length)
+          price = Number(dsResp.data.pairs[0].priceUsd);
+      } catch (e) {}
+    }
+    return price;
+  }
+
+  async getFluidPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=FLUID";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.FLUID.quote.USD.price;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getFluidPreviewRedeem() {
+    // FLUID contract address
+    const fluidAddress = '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33';
+    // previewRedeem(uint256 shares_) view returns (uint256)
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "shares_",
+            "type": "uint256"
+          }
+        ],
+        "name": "previewRedeem",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+    const contract = new ethers.Contract(fluidAddress, abi, this.provider);
+    try {
+      // 1000000 gönderiyoruz
+      const result = await contract.previewRedeem(1000000);
+      return result.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getMorphoPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=MORPHO";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.MORPHO.quote.USD.price;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getCompPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=COMP";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.COMP.quote.USD.price;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getSKYPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SKY";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.SKY.quote.USD.price;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getAccumulatedRewards() {
+    try {
+      const url = "https://app.euler.finance/api/v1/rewards/merkl/user?chainId=1&address=0x8676AFd0251A8E69A93596F9D84D17F179e0BA7A";
+      const response = await axios.get(url);
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const item = response.data.find((item: any) => item.accumulated !== undefined);
+        if (item) return item.accumulated / 10 ** 18;
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
   async getAllAssetData() {
     const stakedUSDeV2Balance = await this.getStakedUSDeV2Balance();
     const aethUsdcBalance = await this.getAETHUSDCBalance();
@@ -377,6 +530,14 @@ export class AppService {
     const poolTokenData = await this.getPoolTokenData();
     const fUSDCBalance = await this.getfUSDCBalance();
     const gizaArmaTotalPrice = await this.getGizaArmaTotalPrice();
+    const aeroPrice = await this.getAEROPrice();
+    const eulPrice = await this.getEULPrice();
+    const senaPrice = await this.getSENAPrice();
+    const fluidPrice = await this.getFluidPrice();
+    const morphoPrice = await this.getMorphoPrice();
+    const compPrice = await this.getCompPrice();
+    const skyPrice = await this.getSKYPrice();
+    const accumulatedRewards = await this.getAccumulatedRewards();
     
     const result: any = {};
     
@@ -393,7 +554,183 @@ export class AppService {
     result.euler = {quantity: eulerBalance.balance, totalPrice: eulerBalance.totalPrice};
     result.fUSDC = {totalPrice: fUSDCBalance.totalPrice};
     result.poolToken = {earnedAero: poolTokenData.earnedAero, poolInfo: poolTokenData.poolInfo};
+    result.aeroPrice = aeroPrice;
+    result.eulPrice = eulPrice;
+    result.senaPrice = senaPrice;
+    result.fluidPrice = fluidPrice;
+    result.morphoPrice = morphoPrice;
+    result.compPrice = compPrice;
+    result.skyPrice = skyPrice;
+    result.accumulatedRewards = accumulatedRewards;
     
     return result;
+  }
+
+  async getWasabiPreviewRedeem() {
+    // Wasabi Spicy Vault USDC contract address
+    const wasabiAddress = '0x7d7bb40f523266b63319bc3e3f6f351b9e389e8f';
+    // previewRedeem(uint256 shares) view returns (uint256)
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "shares",
+            "type": "uint256"
+          }
+        ],
+        "name": "previewRedeem",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+    const contract = new ethers.Contract(wasabiAddress, abi, this.provider);
+    try {
+      // 1000000 gönderiyoruz
+      const result = await contract.previewRedeem(1000000);
+      return result.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getSmokehousePreviewRedeem() {
+    // Smokehouse BBQ USDC contract address
+    const smokehouseAddress = '0xbeefff209270748ddd194831b3fa287a5386f5bc';
+    // previewRedeem(uint256 shares) view returns (uint256)
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "shares",
+            "type": "uint256"
+          }
+        ],
+        "name": "previewRedeem",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+    const contract = new ethers.Contract(smokehouseAddress, abi, this.provider);
+    try {
+      // 1000000000000000000 gönderiyoruz
+      const result = await contract.previewRedeem('1000000000000000000');
+      return result.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getEulerPreviewRedeem() {
+    // Euler ERC20 contract address
+    const eulerAddress = '0xe0a80d35bb6618cba260120b279d357978c42bce';
+    // previewRedeem(uint256 shares) view returns (uint256)
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "shares",
+            "type": "uint256"
+          }
+        ],
+        "name": "previewRedeem",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+    const contract = new ethers.Contract(eulerAddress, abi, this.provider);
+    try {
+      // 1000000 gönderiyoruz
+      const result = await contract.previewRedeem(1000000);
+      return result.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getSUSDePreviewRedeem() {
+    // sUSDe ERC20 contract address
+    const susdeAddress = '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497';
+    // previewRedeem(uint256 shares) view returns (uint256)
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "shares",
+            "type": "uint256"
+          }
+        ],
+        "name": "previewRedeem",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+    const contract = new ethers.Contract(susdeAddress, abi, this.provider);
+    try {
+      // 1000000000000000000 gönderiyoruz
+      const result = await contract.previewRedeem('1000000000000000000');
+      return result.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getSUSDSChi() {
+    // sUSDS ERC20 contract address
+    const susdsAddress = '0xa3931d71877c0e7a3148cb7eb4463524fec27fbd';
+    // chi() view returns (uint256)
+    const abi = [
+      {
+        "inputs": [],
+        "name": "chi",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+    const contract = new ethers.Contract(susdsAddress, abi, this.provider);
+    try {
+      const result = await contract.chi();
+      return result.toString();
+    } catch (e) {
+      return null;
+    }
   }
 }

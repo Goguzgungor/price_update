@@ -10,26 +10,6 @@ export class AppController {
     return this.appService.getAllAssetData();
   }
 
-  @Get('staked-usds')
-  getStakedUSDeV2(): Promise<any> {
-    return this.appService.getSTAKEDSKYUSDSBalance();
-  }
-
-  @Get('stusr')
-  getSTUSR(): Promise<any> {
-    return this.appService.getSTUSRBalance();
-  }
-
-  @Get('fusdc')
-  getfUSDC(): Promise<any> {
-    return this.appService.getfUSDCBalance();
-  }
-
-  @Get('base-contract')
-  getBaseContractData(): Promise<any> {
-    return this.appService.getBaseContractData();
-  }
-
   @Get('pool-token')
   getPoolTokenData(): Promise<any> {
     return this.appService.getPoolTokenData();
@@ -38,5 +18,35 @@ export class AppController {
   @Get('giza-arma-total-price')
   getGizaArmaTotalPrice(): Promise<any> {
     return this.appService.getGizaArmaTotalPrice();
+  }
+
+  @Get('fluid-preview-redeem')
+  getFluidPreviewRedeem(): Promise<any> {
+    return this.appService.getFluidPreviewRedeem();
+  }
+
+  @Get('wasabi-preview-redeem')
+  getWasabiPreviewRedeem(): Promise<any> {
+    return this.appService.getWasabiPreviewRedeem();
+  }
+
+  @Get('smokehouse-preview-redeem')
+  getSmokehousePreviewRedeem(): Promise<any> {
+    return this.appService.getSmokehousePreviewRedeem();
+  }
+
+  @Get('euler-preview-redeem')
+  getEulerPreviewRedeem(): Promise<any> {
+    return this.appService.getEulerPreviewRedeem();
+  }
+
+  @Get('susde-preview-redeem')
+  getSUSDePreviewRedeem(): Promise<any> {
+    return this.appService.getSUSDePreviewRedeem();
+  }
+
+  @Get('susds-chi')
+  getSUSDSChi(): Promise<any> {
+    return this.appService.getSUSDSChi();
   }
 }
