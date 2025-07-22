@@ -211,6 +211,26 @@ export class AppService {
     } catch (error) { return null; }
   }
 
+  async getGIZAPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=GIZA";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.GIZA.quote.USD.price;
+    } catch (error) { return null; }
+  }
+
+  async getSPKPrice() {
+    try {
+      const url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=SPK";
+      const response = await axios.get(url, {
+        headers: { "X-CMC_PRO_API_KEY": this.coinMarketCapApiKey }
+      });
+      return response.data.data.SPK.quote.USD.price;
+    } catch (error) { return null; }
+  }
+
   // --- Contract Read Functions ---
   private formatNumber(value: string, contractKey?: string, isBalance: boolean = false): string {
     if (!value || value === '0') return '0';
@@ -324,6 +344,8 @@ export class AppService {
       morphoPrice,
       compPrice,
       skyPrice,
+      gizaPrice,
+      spkPrice,
       fluidBalance,
       wasabiBalance,
       smokehouseBalance,
@@ -345,6 +367,8 @@ export class AppService {
       this.getMorphoPrice(),
       this.getCompPrice(),
       this.getSKYPrice(),
+      this.getGIZAPrice(),
+      this.getSPKPrice(),
       this.getFluidBalance(),
       this.getWasabiBalance(),
       this.getSmokehouseBalance(),
@@ -367,6 +391,8 @@ export class AppService {
       morphoPrice,
       compPrice,
       skyPrice,
+      gizaPrice,
+      spkPrice,
       funding: walletBalances?.funding,
       DAOTreasury: walletBalances?.daoTreasury
     };
