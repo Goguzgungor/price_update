@@ -320,7 +320,7 @@ export class AppService {
       const baseFunding = Number(baseFundingRes.data.result) / 1e6;
       const ethDao = Number(ethDaoRes.data.result) / 1e6;
       const baseDao = Number(baseDaoRes.data.result) / 1e6;
-      return {
+        return {
         funding: { ethereum: ethFunding, base: baseFunding },
         daoTreasury: { ethereum: ethDao, base: baseDao }
       };
