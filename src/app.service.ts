@@ -212,11 +212,15 @@ export class AppService {
   }
 
   // --- Contract Read Functions ---
-  private formatNumber(value: string): string {
+  private formatNumber(value: string, contractKey?: string, isBalance: boolean = false): string {
     if (!value || value === '0') return '0';
     
-    // For large numbers from smart contracts, we need to handle them as strings
-    // Add decimal point after first digit from left
+    // Special formatting for wasabi and sUSDS balance only (4th digit)
+    if (isBalance && contractKey && ['wasabi', 'susds'].includes(contractKey) && value.length >= 4) {
+      return value.slice(0, 4) + '.' + value.slice(4);
+    }
+    
+    // Default: Add decimal point after first digit from left
     if (value.length >= 1) {
       return value.slice(0, 1) + '.' + value.slice(1);
     }
@@ -230,8 +234,8 @@ export class AppService {
     try { 
       const result = (await contract.previewRedeem(shares)).toString();
       // Format for specific assets
-      if (['wasabi', 'smokehouse', 'euler', 'susde', 'susds'].includes(contractKey)) {
-        return this.formatNumber(result);
+      if (['fluid', 'wasabi', 'smokehouse', 'euler', 'susde', 'susds'].includes(contractKey)) {
+        return this.formatNumber(result, contractKey, false); // false for price
       }
       return result;
     } catch { return null; }
@@ -243,8 +247,8 @@ export class AppService {
     try { 
       const result = (await contract.balanceOf(WALLET_ADDRESS)).toString();
       // Format for specific assets
-      if (['wasabi', 'smokehouse', 'euler', 'susde', 'susds'].includes(contractKey)) {
-        return this.formatNumber(result);
+      if (['fluid', 'wasabi', 'smokehouse', 'euler', 'susde', 'susds'].includes(contractKey)) {
+        return this.formatNumber(result, contractKey, true); // true for balance
       }
       return result;
     } catch { return null; }
@@ -254,7 +258,7 @@ export class AppService {
     const contract = new ethers.Contract(address, chiAbi, this.provider);
     try { 
       const result = (await contract.chi()).toString();
-      return this.formatNumber(result);
+      return this.formatNumber(result, 'susds', false); // false for price
     } catch { return null; }
   }
 
