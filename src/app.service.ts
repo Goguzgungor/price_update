@@ -215,9 +215,9 @@ export class AppService {
   private formatNumber(value: string, contractKey?: string, isBalance: boolean = false): string {
     if (!value || value === '0') return '0';
     
-    // Special formatting for wasabi and sUSDS balance only (4th digit)
-    if (isBalance && contractKey && ['wasabi', 'susds'].includes(contractKey) && value.length >= 4) {
-      return value.slice(0, 4) + '.' + value.slice(4);
+    // Special formatting for wasabi and sUSDS balance only (5th digit)
+    if (isBalance && contractKey && ['wasabi', 'susds'].includes(contractKey) && value.length >= 5) {
+      return value.slice(0, 5) + '.' + value.slice(5);
     }
     
     // Default: Add decimal point after first digit from left
