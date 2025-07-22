@@ -212,22 +212,50 @@ export class AppService {
   }
 
   // --- Contract Read Functions ---
+  private formatNumber(value: string): string {
+    if (!value || value === '0') return '0';
+    
+    // For large numbers from smart contracts, we need to handle them as strings
+    // Add decimal point after first digit from left
+    if (value.length >= 1) {
+      return value.slice(0, 1) + '.' + value.slice(1);
+    }
+    return value;
+  }
+
   private async callPreviewRedeem(contractKey: keyof typeof CONTRACTS, shares: string | number) {
     const contractDef = CONTRACTS[contractKey];
     if (!contractDef.previewRedeemAbi) return null;
     const contract = new ethers.Contract(contractDef.address, contractDef.previewRedeemAbi, this.provider);
-    try { return (await contract.previewRedeem(shares)).toString(); } catch { return null; }
+    try { 
+      const result = (await contract.previewRedeem(shares)).toString();
+      // Format for specific assets
+      if (['wasabi', 'smokehouse', 'euler', 'susde', 'susds'].includes(contractKey)) {
+        return this.formatNumber(result);
+      }
+      return result;
+    } catch { return null; }
   }
   private async callBalanceOf(contractKey: keyof typeof CONTRACTS) {
     const contractDef = CONTRACTS[contractKey];
     if (!contractDef.balanceOfAbi) return null;
     const contract = new ethers.Contract(contractDef.address, contractDef.balanceOfAbi, this.provider);
-    try { return (await contract.balanceOf(WALLET_ADDRESS)).toString(); } catch { return null; }
+    try { 
+      const result = (await contract.balanceOf(WALLET_ADDRESS)).toString();
+      // Format for specific assets
+      if (['wasabi', 'smokehouse', 'euler', 'susde', 'susds'].includes(contractKey)) {
+        return this.formatNumber(result);
+      }
+      return result;
+    } catch { return null; }
   }
   private async callChi() {
     const { address, chiAbi } = CONTRACTS.susds;
     const contract = new ethers.Contract(address, chiAbi, this.provider);
-    try { return (await contract.chi()).toString(); } catch { return null; }
+    try { 
+      const result = (await contract.chi()).toString();
+      return this.formatNumber(result);
+    } catch { return null; }
   }
 
   async getFluidPreviewRedeem() { return this.callPreviewRedeem('fluid', 1000000); }
